@@ -1,9 +1,48 @@
 const { expect } = require('chai');
 const { Template } = require('../index');
 
+// Mock the bit that pulls templates from the index.html
+global.document = {
+  querySelectorAll: () => [
+    { id: 'test1', innerHTML: 'Name: {{name}}, Age: {{age}}' },
+    { id: 'test2', innerHTML: 'Name: {{user.name}}, Age: {{age}}' },
+    { id: 'test3', innerHTML: '{{show}}Show this{{/show}}{{hide}}Hide this{{/hide}}' },
+    { id: 'test4', innerHTML: '{{fruit}}<li>{{name}} are {{colour}}</li>{{/fruit}}' },
+    { id: 'test5', innerHTML: 'Name: {{name}}, Age: {{age}}, {{unclosed}}' },
+  ],
+};
 
 describe('#rw-templater', () => {
-  it('pass a trivial test', () => {
-    expect('1').to.equal('1');
+  it('throws for unknown id', () => {
+    const html = Template.it('unknownId', { name: 'Richard', age: 36 });
+    expect(html).to.equal('unknownId');
+  });
+
+  it('throws for unknown data property', () => {
+    expect(() => Template.it('test2', { age: 3 })).to.throw(Error, "rw: 'user' not found");
+  });
+
+  it('processes simple objects', () => {
+    const html = Template.it('test1', { name: 'Richard', age: 36 });
+    expect(html).to.equal('Name: Richard, Age: 36');
+  });
+
+  it('processes deep objects', () => {
+    const html = Template.it('test2', { user: { name: 'Richard' }, age: 36 });
+    expect(html).to.equal('Name: Richard, Age: 36');
+  });
+
+  it('processes conditionals', () => {
+    const html = Template.it('test3', { show: true });
+    expect(html).to.equal('Show this');
+  });
+
+  it('processes loops', () => {
+    const html = Template.it('test4', { fruit: [{ name: 'Apples', colour: 'green' }, { name: 'Raspberries', colour: 'red' }] });
+    expect(html).to.equal('<li>Apples are green</li><li>Raspberries are red</li>');
+  });
+
+  it('throws for unclosed tag', () => {
+    expect(() => Template.it('test5', { name: 'Richard', age: 36 })).to.throw(Error, "rw: 'unclosed' not closed");
   });
 });
