@@ -39,7 +39,7 @@ exports.Template = {
     let dataLookup = data;
 
     for (let i = 0; i < path.length; i += 1) {
-      dataLookup = dataLookup[path[i]];
+      dataLookup = dataLookup[path[i]] || this.global[path[i]];
 
       // Property not found and not at child property
       if (dataLookup === undefined && i !== path.length - 1) {
@@ -83,7 +83,8 @@ exports.Template = {
               pattern.lastIndex = 0;
               subTemplate += this.it(
                 templateEnd,
-                this.extend({ _key: key, _content: substituted[key] }, substituted[key])
+                this.extend({ _key: key, _content: substituted[key] }, substituted[key]),
+                true
               );
             });
           }
@@ -101,7 +102,7 @@ exports.Template = {
     return templateString;
   },
 
-  it(template, data) {
+  it(template, data, notFirst) {
     // On first run, call init plugins
     if (!this.initialized) {
       this.initialized = 1;
@@ -123,6 +124,7 @@ exports.Template = {
 
     // // Substitute tokens in template
     if (templateString && data) {
+      if (!notFirst) this.global = data;
       templateString = this.substitute(templateString, data);
     }
 

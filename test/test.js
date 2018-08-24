@@ -9,6 +9,7 @@ global.document = {
     { id: 'test3', innerHTML: '{{show}}Show this{{/show}}{{hide}}Hide this{{/hide}}' },
     { id: 'test4', innerHTML: '{{fruit}}<li>{{name}} are {{colour}}</li>{{/fruit}}' },
     { id: 'test5', innerHTML: 'Name: {{name}}, Age: {{age}}, {{unclosed}}' },
+    { id: 'test6', innerHTML: '{{items}}<p>{{name}}</p><p>{{global}}</p>{{/items}}' },
   ],
 };
 
@@ -40,6 +41,11 @@ describe('#rw-templater', () => {
   it('processes loops', () => {
     const html = Template.it('test4', { fruit: [{ name: 'Apples', colour: 'green' }, { name: 'Raspberries', colour: 'red' }] });
     expect(html).to.equal('<li>Apples are green</li><li>Raspberries are red</li>');
+  });
+
+  it('allows globals within loops', () => {
+    const html = Template.it('test6', { global: 'all', items: [{ name: 'green' }, { name: 'red' }] });
+    expect(html).to.equal('<p>green</p><p>all</p><p>red</p><p>all</p>');
   });
 
   it('throws for unclosed tag', () => {
