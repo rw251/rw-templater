@@ -1,6 +1,6 @@
 {
   "name": "rw-templater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An extremely small opinionated templating engine",
   "main": "index.js",
   "scripts": {
