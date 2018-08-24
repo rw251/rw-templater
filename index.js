@@ -39,11 +39,14 @@ exports.Template = {
     let dataLookup = data;
 
     for (let i = 0; i < path.length; i += 1) {
-      dataLookup = dataLookup[path[i]] || this.global[path[i]];
+      dataLookup = dataLookup[path[i]];
 
       // Property not found and not at child property
-      if (dataLookup === undefined && i !== path.length - 1) {
-        throw new Error(`rw: '${path[i]}' not found${i ? ` in ${tag}` : ''}`);
+      if (dataLookup === undefined) {
+        dataLookup = this.global[path[i]]; // try a global property
+        if (dataLookup === undefined && i !== path.length - 1) {
+          throw new Error(`rw: '${path[i]}' not found${i ? ` in ${tag}` : ''}`);
+        }
       }
     }
 
