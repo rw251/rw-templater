@@ -30,7 +30,7 @@
 
 const pattern = new RegExp('{{\\s*([a-z0-9_$][\\.a-z0-9_]*)\\s*}}', 'gi');
 
-exports.Template = {
+export default {
   initialized: false,
   templateCache: {},
 

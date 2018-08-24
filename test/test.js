@@ -1,5 +1,6 @@
+import Template from '../index';
+
 const { expect } = require('chai');
-const { Template } = require('../index');
 
 // Mock the bit that pulls templates from the index.html
 global.document = {
