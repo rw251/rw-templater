@@ -28,7 +28,7 @@
 
 // document.getElementById('main').innerHTML = Template.it('templateId', data);
 
-const pattern = new RegExp('{{\\s*([a-z0-9_$][\\.a-z0-9_]*)\\s*}}', 'gi');
+const pattern = new RegExp('{{\\s*(!)?([a-z0-9_$][\\.a-z0-9_]*)\\s*}}', 'gi');
 
 export default {
   initialized: false,
@@ -62,7 +62,7 @@ export default {
     let templateString = template;
     let match = pattern.exec(templateString);
     while (match !== null) {
-      const [, token] = match;
+      const [, negation, token] = match;
       const substituted = this.addToken(token, data, templateString);
       const startPos = match.index;
       const endPos = pattern.lastIndex;
@@ -80,7 +80,7 @@ export default {
           templateEnd = templateEnd.slice(0, closePos);
 
           if (typeof substituted === 'boolean') {
-            subTemplate = substituted ? templateEnd : '';
+            subTemplate = (substituted ? !negation : negation) ? templateEnd : '';
           } else {
             Object.keys(substituted).forEach((key) => {
               pattern.lastIndex = 0;
